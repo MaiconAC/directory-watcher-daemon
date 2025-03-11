@@ -20,7 +20,7 @@ void DirectoryWatcher::start()
     {
       std::filesystem::file_time_type fileLastWriteTime = std::filesystem::last_write_time(file);
 
-      if (true/*!filesState.contains(file.path().string())*/)
+      if (!filesState.contains(file.path().string()))
       {
         // Se o arquivo nao esta no map, ele foi criado
         filesState[file.path().string()] = fileLastWriteTime;

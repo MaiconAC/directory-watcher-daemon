@@ -1,13 +1,12 @@
 #include <iostream>
 #include <unistd.h>
 
+#include "directory-watcher.h"
+
 int main()
 {
-  while (true)
-  {
-    std::cout << "Teste do projeto";
-    sleep(1000);
-  }
+  DirectoryWatcher dirWatcher("/home/mcunico/Templates/");
+  dirWatcher.start();
 
   return 0;
 };
