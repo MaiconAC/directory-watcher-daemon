@@ -16,6 +16,7 @@ Logger::Logger(const std::string &filename)
     if (!logFile.is_open())
     {
       // Apresentar erro ou para o serviço? Talvez parar e tentar de novo mais tarde
+      throw;
     }
   }
 

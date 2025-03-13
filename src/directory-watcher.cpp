@@ -14,22 +14,38 @@ void DirectoryWatcher::start()
 {
   Logger logger("logFile.txt");
 
+  std::string startMessage = "Directory Watcher is running on " + directoryPath + "...";
+  logger.log(startMessage, 0);
+
   while (running)
   {
+    std::this_thread::sleep_for(std::chrono::seconds(3));
+
+    // Validar se algum arquivo foi excluido -> usa exists para ver se o path existe
+    for (auto file = filesState.begin(); file != filesState.end(); ++file)
+    {
+      if (!std::filesystem::exists(file->first))
+      {
+        filesState.erase(file->first);
+        std::string logMessage = "File: " + file->first + " deleted!";
+        logger.log(logMessage, 0);
+      }
+    }
+
     for (std::filesystem::directory_entry file : std::filesystem::recursive_directory_iterator(directoryPath))
     {
       std::filesystem::file_time_type fileLastWriteTime = std::filesystem::last_write_time(file);
 
       if (!filesState.contains(file.path().string()))
       {
-        // Se o arquivo nao esta no map, ele foi criado
+        // Valida se o arquivo foi criado -> nao esta no map
         filesState[file.path().string()] = fileLastWriteTime;
         std::string logMessage = "File: " + file.path().string() + " created!";
         logger.log(logMessage, convert_file_time(fileLastWriteTime));
       }
       else if (filesState[file.path().string()] != fileLastWriteTime)
       {
-        // Mudou a data da ultima atualizacao = foi atualizacro
+        // Validar se o arquivo foi atualizado -> mudou a data de atualizacao
         filesState[file.path().string()] = fileLastWriteTime;
         std::string logMessage = "File: " + file.path().string() + " updated!";
         logger.log(logMessage, convert_file_time(fileLastWriteTime));
